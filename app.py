@@ -38,8 +38,7 @@ graphs = [dict(label=str(g), value=str(g)) for g in graph_list]
 strike_range = [dict(label=str(sr).capitalize(), value=str(sr).capitalize()) for sr in strike_range_list]
 call_put = [dict(label=str(cp).capitalize(), value=str(cp).capitalize()) for cp in call_or_put_list]
 
-df_2d = pd.DataFrame()
-df_3d = pd.DataFrame()
+df_iv = pd.DataFrame()
 
 # Make app layout
 app.layout = html.Div(
@@ -231,7 +230,7 @@ app.layout = html.Div(
 def graph_2d(strike, option, s, r, q):
     trace = []
     calc_iv(strike, option, s, r, q, "2D")
-    trace.append(go.Scatter(x=df_2d["Strike"], y=df_2d["IV"], name="2D Graph", mode='lines',
+    trace.append(go.Scatter(x=df_iv["Strike"], y=df_iv["IV"], name="2D Graph", mode='lines',
                             marker={'size': 8, "opacity": 0.6, "line": {'width': 0.5}}, ))
     return {"data": trace,
             "layout": go.Layout(colorway=['#fdae61', '#abd9e9', '#2c7bb6'],
@@ -261,10 +260,10 @@ def graph_3d(log_selector, graph_toggles, strike, option, s, r, q,
 
     trace1 = {
         "type": "mesh3d",
-        'x': df_3d["Strike"],
-        'y': df_3d["IV"],
-        'z': df_3d["Time_Expiration"],
-        'intensity': df_3d["Time_Expiration"],
+        'x': df_iv["Strike"],
+        'y': df_iv["IV"],
+        'z': df_iv["Time_Expiration"],
+        'intensity': df_iv["Time_Expiration"],
         'autocolorscale': False,
         "colorscale": [
             [0, "rgb(244,236,21)"], [0.3, "rgb(249,210,41)"], [0.4, "rgb(134,191,118)"], [
@@ -311,7 +310,7 @@ def graph_3d(log_selector, graph_toggles, strike, option, s, r, q,
                 "zerolinecolor": "rgb(255, 255, 255)"
             },
             "yaxis": {
-                "title": "IV (σ)",
+                "title": "Expiry (days)",
                 "showbackground": True,
                 "backgroundcolor": "rgb(230, 230,230)",
                 "gridcolor": "rgb(255, 255, 255)",
@@ -319,7 +318,7 @@ def graph_3d(log_selector, graph_toggles, strike, option, s, r, q,
             },
             "zaxis": {
                 "rangemode": "tozero",
-                "title": "Expiry (days)",
+                "title": "IV (σ)",
                 "type": log_selector,
                 "showbackground": True,
                 "backgroundcolor": "rgb(230, 230,230)",
@@ -368,9 +367,9 @@ def make_heatmap_plot(strike, option, s, r, q, graph_toggles,
 
     trace1 = {
         "type": "contour",
-        'x': df_3d["Strike"],
-        'y': df_3d["IV"],
-        'z': df_3d["Time_Expiration"],
+        'x': df_iv["Strike"],
+        'y': df_iv["IV"],
+        'z': df_iv["Time_Expiration"],
         'connectgaps': True,
         'line': {'smoothing': '1'},
         'contours': {'coloring': shading},
@@ -437,7 +436,7 @@ def make_heatmap_plot(strike, option, s, r, q, graph_toggles,
 def make_scatter_plot(strike, option, s, r, q, graph_toggles,
                       graph_toggles_state, iv_scatter_layout):
 
-    calc_iv(strike, option, s, r, q, "2D")
+    calc_iv(strike, option, s, r, q, "3D")
 
     if 'discrete' in graph_toggles:
         shading = 'contour'
@@ -452,8 +451,8 @@ def make_scatter_plot(strike, option, s, r, q, graph_toggles,
     trace1 = {
         "type": typ,
         'mode': 'markers',
-        'x': df_2d["Strike"],
-        'y': df_2d["IV"],
+        'x': df_iv["Strike"],
+        'y': df_iv["IV"],
         'boxpoints': 'outliers',
         'marker': {'color': '#32399F', 'opacity': 0.2}
     }
@@ -481,8 +480,7 @@ def make_scatter_plot(strike, option, s, r, q, graph_toggles,
     return figure
 
 def calc_iv(selected_strike, selected_option, selected_s, selected_r, selected_q, selected_graph):
-    df_2d.drop(df_2d.index, inplace=True)
-    df_3d.drop(df_3d.index, inplace=True)
+    df_iv.drop(df_iv.index, inplace=True)
     prior_settle = []
     strike_price = []
     try:
@@ -532,9 +530,9 @@ def calc_iv(selected_strike, selected_option, selected_s, selected_r, selected_q
                 iv.append(implied_volatility(price, s, strike_price[counter], t, r, q, flag))
                 counter = counter + 1
 
-            df_2d["Strike"] = strike_price #x-axis
-            df_2d["IV"] = iv #y-axis
-            df_2d.to_csv("2D.csv")
+            df_iv["Strike"] = strike_price #x-axis
+            df_iv["IV"] = iv #y-axis
+            df_iv.to_csv("2D.csv")
 
         #3d option
         if selected_graph.upper() == "3D":
@@ -547,10 +545,10 @@ def calc_iv(selected_strike, selected_option, selected_s, selected_r, selected_q
                 strike_3d.append(strike_price[counter])
                 counter = counter + 1
 
-            df_3d["Strike"] = strike_3d #x-axis
-            df_3d["IV"] = iv #y-axis
-            df_3d["Time_Expiration"] = time_exp #z-axis
-            df_3d.to_csv("3D.csv")
+            df_iv["Strike"] = strike_3d #x-axis
+            df_iv["IV"] = iv #y-axis
+            df_iv["Time_Expiration"] = time_exp #z-axis
+            df_iv.to_csv("3D.csv")
 
     except Exception as e:
         print(e)
