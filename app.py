@@ -13,7 +13,7 @@ import dash_html_components as html
 import pprint
 import json
 import requests
-from data_fetcher import get_time_delta, get_raw_data, get_filtered_data
+#from data_fetcher import get_time_delta, get_raw_data, get_filtered_data
 from py_vollib.black_scholes_merton.implied_volatility import implied_volatility
 
 
