@@ -34,7 +34,6 @@ graph_list = ["2D", "3D"]
 call_or_put_list = ["Call", "Put"]
 
 graphs = [dict(label=str(g), value=str(g)) for g in graph_list]
-strike_range = [dict(label=str(sr).capitalize(), value=str(sr).capitalize()) for sr in strike_range_list]
 call_put = [dict(label=str(cp).capitalize(), value=str(cp).capitalize()) for cp in call_or_put_list]
 
 df_iv = pd.DataFrame()
