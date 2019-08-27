@@ -31,7 +31,6 @@ if 'DYNO' in os.environ:
     })
 
 graph_list = ["2D", "3D"]
-strike_range_list = ["ALL", "ATM", "ACTIVE"]
 call_or_put_list = ["Call", "Put"]
 
 graphs = [dict(label=str(g), value=str(g)) for g in graph_list]
