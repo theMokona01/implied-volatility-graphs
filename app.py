@@ -162,7 +162,7 @@ app.layout = html.Div(
             dcc.Graph(id='iv_surface', animate=True, style={'max-height': '600', 'height': '60vh'}),
              dcc.Interval(
             id='interval-component',
-            interval=10*1000, # updates once every 3 seconds
+            interval=10*1000, # updates once every 10 seconds
             n_intervals=0
         )
         ],
